@@ -50,4 +50,4 @@ promo_codes = {
 ```
 
 ## Support
-If you see any flaws or bugs or want to contribute, contact me through discord or open an [GitHub repository](https://github.com/Timrosinnus64/Promo-Codes).
+If you see any flaws or bugs or want to contribute, contact me through discord or open an [GitHub repository](https://github.com/Timrosinnus64/Promo-Codes-).
