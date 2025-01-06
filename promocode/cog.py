@@ -10,12 +10,9 @@ if TYPE_CHECKING:
     from ballsdex.core.bot import BallsDexBot
 
 promo_codes = {
-    "FIRST":{"country": "Kent", 
-             "expires": datetime(2025, 1, 31),
-             },
-    "NORTHOVERTUNE":{"country": "Grozny", 
-                     "expires": datetime(2025, 1, 11),
-                     }
+    "PROMOCODENAME":{"country": "COLLECTIBLENAMEHERE", 
+             "expires": datetime(Y, M, D),
+             }
 }
 redeemed_users = {}
 
@@ -29,7 +26,7 @@ class Promocode(commands.GroupCog, group_name="promocode"):
     @app_commands.command()
     async def redeem(self, interaction: discord.Interaction, code: str):
         """
-        Redeeem a promo code to claim a shipgirl
+        Redeeem a promo code to claim the collectible
         """
         await interaction.response.defer(ephemeral=True, thinking=True)
 
@@ -52,7 +49,7 @@ class Promocode(commands.GroupCog, group_name="promocode"):
 
         except StopIteration:
             await interaction.followup.send(
-                "The promo code is valid, but the shipgirl is unavailable at the moment", ephemeral=True
+                "The promo code is valid, but the collectible is unavailable at the moment", ephemeral=True
             )
             return
     
@@ -74,6 +71,6 @@ class Promocode(commands.GroupCog, group_name="promocode"):
         redeemed_users[interaction.user.id].append(code.upper())
 
         await interaction.followup.send(
-            f"Code Succesfully redeemed. {promo_ball.country} now awaits at your dock.",
+            f"Code Succesfully redeemed. {promo_ball.country} now awaits in your inventory.",
             ephemeral=True,
         )
