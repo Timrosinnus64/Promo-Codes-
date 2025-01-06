@@ -10,7 +10,7 @@ if TYPE_CHECKING:
     from ballsdex.core.bot import BallsDexBot
 
 promo_codes = {
-    "PROMOCODENAME":{"country": "COLLECTIBLENAMEHERE", 
+    "PROMOCODENAMEHERE":{"country": "COLLECTIBLENAMEHERE", 
              "expires": datetime(Y, M, D),
              }
 }
