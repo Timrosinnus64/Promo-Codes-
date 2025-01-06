@@ -23,7 +23,7 @@ For the Older versions (Below 2.22.0):
    ```
 It should look like this:
    ```py
-   PACKAGES = ["config", "players", "countryballs", "info", "admin", "trade", "balls", "promocode]
+   PACKAGES = ["config", "players", "countryballs", "info", "admin", "trade", "balls", "promocode"]
    ```
 3. Save the file
 
