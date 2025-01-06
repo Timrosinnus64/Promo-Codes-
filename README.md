@@ -33,8 +33,11 @@ Enjoy!
 
 ## Small Guide on adding Promo Codes
 ```promo_codes``` - This is where you add your promo codes
+
 Y - year
+
 M - Month
+
 D - Day
 demonstration:
 ```py
