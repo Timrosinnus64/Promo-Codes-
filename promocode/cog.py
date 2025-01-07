@@ -25,11 +25,13 @@ class Promocode(commands.GroupCog, group_name="promos"):
 
     # <> Creates a promo code for a ball
     @app_commands.command()
-    @app_commands.describe(ball="Select a ball to create a promo code for")
+    @app_commands.describe(ball="Select a ball to create a promo code for", code="Optional promo code name")
     @is_owner()
-    async def create(self, interaction: discord.Interaction, ball: BallEnabledTransform):
+    async def create(self, interaction: discord.Interaction, ball: BallEnabledTransform, code: str = None):
         """Create a promo code for a ball"""
-        code = 'PROMO-' + ''.join(random.choices('ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789', k=8)) # <- Generates a random code, with 8 letters and numbers
+        await interaction.response.defer(ephermal=True)
+        if not code:
+            code = 'PROMO-' + ''.join(random.choices('ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789', k=8)) # <- Generates a random code, with 8 letters and numbers
         self.promo_codes.append({"code": code, "ball": ball})
         await interaction.response.send_message(f"Promo code `{code}` created for {ball.country}.", ephemeral=True)
 
