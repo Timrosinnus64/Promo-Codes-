@@ -1,76 +1,84 @@
 import discord
 from discord import app_commands
 from discord.ext import commands
+from ballsdex.settings import settings
 import random
-from datetime import datetime
-from ballsdex.core.models import BallInstance, Player, balls
-from typing import TYPE_CHECKING
+from ballsdex.core.models import BallInstance, Player
+from ballsdex.core.utils.transformers import BallEnabledTransform
 
-if TYPE_CHECKING:
-    from ballsdex.core.bot import BallsDexBot
+promo_codes = [] # <- List of promo codes << DO NOT CHANGE THIS LINE >>
+claimed = [] # <- List of claimed promo codes << DO NOT CHANGE THIS LINE >>
 
-promo_codes = {
-    "PROMOCODENAMEHERE":{"country": "COLLECTIBLENAMEHERE", 
-             "expires": datetime(Y, M, D),
-             }
-}
-redeemed_users = {}
+def is_owner():
+    async def predicate(interaction: discord.Interaction) -> bool:
+        return interaction.user.id == interaction.client.application.owner.id # <- Checks if youre the bot owner, change "interaction.client.application.owner.id" to your Discord ID if youre using a alt account.
+    return app_commands.check(predicate)
 
-class Promocode(commands.GroupCog, group_name="promocode"):
+class Promocode(commands.GroupCog, group_name="promos"):
     """
     Promo Code command
     """
-    def __init__(self, bot: "BallsDexBot"):
+    def __init__(self, bot: commands.Bot):
         self.bot = bot
+        self.promo_codes = promo_codes
+        self.claimed = claimed
 
+    # <> Creates a promo code for a ball
     @app_commands.command()
-    async def redeem(self, interaction: discord.Interaction, code: str):
-        """
-        Redeeem a promo code to claim the collectible
-        """
-        await interaction.response.defer(ephemeral=True, thinking=True)
+    @app_commands.describe(ball="Select a ball to create a promo code for", code="Optional promo code name")
+    @is_owner()
+    async def create(self, interaction: discord.Interaction, ball: BallEnabledTransform, code: str = None):
+        """Create a promo code for a ball"""
+        await interaction.response.defer(ephermal=True)
+        if not code:
+            code = 'PROMO-' + ''.join(random.choices('ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789', k=8)) # <- Generates a random code, with 8 letters and numbers
+        self.promo_codes.append({"code": code, "ball": ball})
+        await interaction.response.send_message(f"Promo code `{code}` created for {ball.country}.", ephemeral=True)
 
-        code_data = promo_codes.get(code.upper())
-        if not code_data:
-            await interaction.followup.send(
-                "Invalid Promo Code. Please check if its valid and try again", ephemeral=True
-            )
+    # <> Claims a ball using a promo code
+    @app_commands.command()
+    async def claim(self, interaction: discord.Interaction, code: str):
+        """Claim a ball using a promo code"""
+        await interaction.response.defer()
+        for promo in self.promo_codes:
+            if promo["code"] == code:
+                if code in self.claimed:
+                    await interaction.followup.send("This promo code has already been claimed.", ephemeral=False) # <- Checks if the code has already been claimed
+                    return
+                player, _ = await Player.get_or_create(discord_id=interaction.user.id)
+                ball_instance = await BallInstance.create(
+                    ball=promo["ball"],
+                    player=player,
+                    attack_bonus=random.randint(-settings.max_attack_bonus, settings.max_attack_bonus),
+                    health_bonus=random.randint(-settings.max_health_bonus, settings.max_health_bonus),
+                ) # <- Creates a ball instance with random attack and health bonuses
+                self.claimed.append(code)
+                await interaction.followup.send(f"You have claimed {ball_instance.ball.country}!")
+                return
+        await interaction.followup.send("Invalid promo code.", ephemeral=False)
+
+    # <> Lists all available promo codes
+    @app_commands.command()
+    @is_owner()
+    async def list(self, interaction: discord.Interaction):
+        """List all available promo codes"""
+        await interaction.response.defer(ephemeral=True)
+        if not self.promo_codes:
+            await interaction.followup.send("No promo codes available.")
             return
-    
-        if datetime.now() > code_data["expires"]:
-            await interaction.followup.send(
-                "This promo code has expired", ephemeral=True
-            )
-            return
-    
-        country = code_data["country"]
-        try:
-            promo_ball = next(ball for ball in balls.values() if ball.country.lower() == country.lower())
+        codes = "\n".join([promo["code"] for promo in self.promo_codes if promo["code"] not in self.claimed])
+        await interaction.followup.send(f"Available promo codes:\n{codes}", ephemeral=True)
 
-        except StopIteration:
-            await interaction.followup.send(
-                "The promo code is valid, but the collectible is unavailable at the moment", ephemeral=True
-            )
-            return
-    
-        user_redeemed = redeemed_users.get(interaction.user.id, [])
-        if code.upper() in user_redeemed:
-            await interaction.followup.send(
-                "You have Arleady redeemed it", ephemeral=True
-            )
-            return
-    
-        player, _ = await Player.get_or_create(discord_id=interaction.user.id)
-
-        await BallInstance.create(
-            ball=promo_ball, player=player, server_id=interaction.guild_id
-        )
-
-        if interaction.user.id not in redeemed_users:
-            redeemed_users[interaction.user.id] = []
-        redeemed_users[interaction.user.id].append(code.upper())
-
-        await interaction.followup.send(
-            f"Code Succesfully redeemed. {promo_ball.country} now awaits in your inventory.",
-            ephemeral=True,
-        )
+    # <> Deletes a promo code
+    @app_commands.command()
+    @app_commands.describe(code="Select a promo code to delete")
+    @is_owner()
+    async def delete(self, interaction: discord.Interaction, code: str):
+        """Delete a promo code"""
+        await interaction.response.defer(ephemeral=True)
+        for promo in self.promo_codes:
+            if promo["code"] == code:
+                self.promo_codes.remove(promo)
+                await interaction.followup.send(f"Promo code `{code}` deleted.")
+                return
+        await interaction.followup.send("Promo code not found.", ephemeral=True)
