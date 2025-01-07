@@ -11,7 +11,7 @@ claimed = [] # <- List of claimed promo codes << DO NOT CHANGE THIS LINE >>
 
 def is_owner():
     async def predicate(interaction: discord.Interaction) -> bool:
-        return interaction.user.id == interaction.client.application.owner.id
+        return interaction.user.id == interaction.client.application.owner.id # <- Checks if youre the bot owner, change "interaction.client.application.owner.id" to your Discord ID if youre using a alt account.
     return app_commands.check(predicate)
 
 class Promocode(commands.GroupCog, group_name="promos"):
