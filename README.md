@@ -1,8 +1,6 @@
 # Promo Code for Dexes
 Here is a code that allows to add promo codes to the dexes
 
-Disclaimer: For now it will give collectibles with bonus HP/ATK at 0%
-
 ## Installation Guide
 This is the guide on how to install Promo Codes into your own dex :D
 
