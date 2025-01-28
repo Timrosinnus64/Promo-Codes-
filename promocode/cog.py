@@ -11,8 +11,8 @@ if TYPE_CHECKING:
 
 promo_codes = {
     "PROMOCODENAMEHERE":{"country": "COLLECTIBLENAMEHERE", 
-             "expires": datetime(Y, M, D),
-             }
+                         "expires": datetime(Y, M, D),
+                        }
 }
 redeemed_users = {}
 
