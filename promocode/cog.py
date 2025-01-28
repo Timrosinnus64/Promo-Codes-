@@ -63,7 +63,11 @@ class Promocode(commands.GroupCog, group_name="promocode"):
         player, _ = await Player.get_or_create(discord_id=interaction.user.id)
 
         await BallInstance.create(
-            ball=promo_ball, player=player, server_id=interaction.guild_id
+            ball=promo_ball, 
+            player=player, 
+            server_id=interaction.guild_id,
+            attack_health=random.randit(-20, 20)
+            bonus_health=random.randit(-20, 20)
         )
 
         if interaction.user.id not in redeemed_users:
