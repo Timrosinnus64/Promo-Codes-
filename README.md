@@ -15,6 +15,7 @@ For the newer version of the dex (2.22.0 and beyond):
 1. Locate config.yml
 2. Post "ballsdex/packages/promocode
 3. Save the file
+
 For the Older versions (Below 2.22.0):
 1. Locate "bot.py" file in ballsdex/core
 2. Put "promocode: in:
