@@ -46,6 +46,7 @@ demonstration:
 promo_codes = {
      "YOURPROMOCODEHERE":{"country": "COLLECTIBLENAMEHERE",
                           "expires": datetime(Y, M, D,),
+                          "special": "SPECIALNAMEHERE",
                          }
 }
 ```
