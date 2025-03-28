@@ -3,7 +3,8 @@ from discord import app_commands
 from discord.ext import commands
 import random
 from datetime import datetime
-from ballsdex.core.models import BallInstance, Player, balls
+from ballsdex.core.models import BallInstance, Player, balls, specials
+from ballsdex.settings import settings
 from typing import TYPE_CHECKING
 
 if TYPE_CHECKING:
